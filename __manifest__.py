@@ -19,6 +19,9 @@
     'data': [
         'security/ir.model.access.csv',
         'views/res_partner_views.xml',
+        'views/purchase_order_views.xml',
+        'views/purchase_order_line_views.xml',
+        # 'reports/purchase_order_report_template.xml',
     ],
     'installable': True,
     'application': False,

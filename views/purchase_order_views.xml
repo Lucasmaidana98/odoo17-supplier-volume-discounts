@@ -7,32 +7,25 @@
             <field name="model">purchase.order</field>
             <field name="inherit_id" ref="purchase.purchase_order_form"/>
             <field name="arch" type="xml">
-                <!-- Add supplier discount information in header -->
+                <!-- Add supplier discount information after partner_id -->
                 <xpath expr="//field[@name='partner_id']" position="after">
-                    <field name="supplier_volume_discount_percentage" readonly="1"/>
-                    <field name="supplier_minimum_purchase_amount" readonly="1"/>
-                    <field name="qualifies_for_discount" readonly="1"/>
+                    <group string="Volume Discount Information" invisible="not supplier_volume_discount_percentage">
+                        <field name="supplier_volume_discount_percentage" readonly="1"/>
+                        <field name="supplier_minimum_purchase_amount" readonly="1"/>
+                        <field name="qualifies_for_discount" readonly="1"/>
+                        <field name="discount_applied" readonly="1"/>
+                    </group>
                 </xpath>
                 
-                <!-- Add discount summary in totals section -->
-                <xpath expr="//field[@name='amount_untaxed']" position="after">
-                    <field name="amount_without_discount" invisible="not qualifies_for_discount"/>
-                    <field name="total_discount_amount" invisible="not qualifies_for_discount"/>
-                    <field name="discount_percentage_savings" invisible="not qualifies_for_discount"/>
+                <!-- Add discount summary in terms section -->
+                <xpath expr="//field[@name='notes']" position="before">
+                    <group string="Discount Summary" invisible="not qualifies_for_discount">
+                        <field name="amount_without_discount" readonly="1"/>
+                        <field name="total_discount_amount" readonly="1"/>
+                        <field name="discount_percentage_savings" readonly="1"/>
+                    </group>
                 </xpath>
-            </field>
-        </record>
-        
-        <!-- Purchase Order tree view extension -->
-        <record id="purchase_order_tree_supplier_volume_discount" model="ir.ui.view">
-            <field name="name">purchase.order.tree.supplier.volume.discount</field>
-            <field name="model">purchase.order</field>
-            <field name="inherit_id" ref="purchase.purchase_order_tree"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='amount_untaxed']" position="after">
-                    <field name="qualifies_for_discount" optional="hide"/>
-                    <field name="total_discount_amount" optional="hide"/>
-                </xpath>
+                
             </field>
         </record>
     </data>

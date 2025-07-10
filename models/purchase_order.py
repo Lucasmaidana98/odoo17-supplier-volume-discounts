@@ -46,15 +46,36 @@ class PurchaseOrder(models.Model):
         store=True,
         help="Percentage of savings compared to original amount"
     )
+    
+    discount_applied = fields.Boolean(
+        string='Discount Applied',
+        compute='_compute_discount_applied',
+        help="True if volume discount has been applied to order lines"
+    )
 
-    @api.depends('amount_untaxed', 'supplier_minimum_purchase_amount')
+    @api.depends('amount_untaxed', 'supplier_minimum_purchase_amount', 'order_line.price_subtotal')
     def _compute_qualifies_for_discount(self):
+        import logging
+        _logger = logging.getLogger(__name__)
+        
         for order in self:
+            old_qualifies = order.qualifies_for_discount
             order.qualifies_for_discount = (
                 order.amount_untaxed >= order.supplier_minimum_purchase_amount
                 and order.supplier_minimum_purchase_amount > 0
                 and order.supplier_volume_discount_percentage > 0
             )
+            
+            _logger.info(f"DISCOUNT COMPUTE: Order {order.name} - Amount: {order.amount_untaxed}, Min: {order.supplier_minimum_purchase_amount}, Discount%: {order.supplier_volume_discount_percentage}")
+            _logger.info(f"DISCOUNT COMPUTE: Old qualifies: {old_qualifies}, New qualifies: {order.qualifies_for_discount}")
+            
+            # Auto-apply discount when qualification status changes
+            if order.qualifies_for_discount and not old_qualifies:
+                _logger.info(f"DISCOUNT COMPUTE: Auto-applying discount to {order.name}")
+                order._auto_apply_volume_discount()
+            elif not order.qualifies_for_discount and old_qualifies:
+                _logger.info(f"DISCOUNT COMPUTE: Removing discount from {order.name}")
+                order._remove_volume_discount()
 
     @api.depends('amount_untaxed', 'qualifies_for_discount', 'supplier_volume_discount_percentage')
     def _compute_discount_amounts(self):
@@ -70,6 +91,17 @@ class PurchaseOrder(models.Model):
                 order.amount_without_discount = order.amount_untaxed
                 order.total_discount_amount = 0.0
                 order.discount_percentage_savings = 0.0
+                
+    @api.depends('order_line.discount', 'supplier_volume_discount_percentage')
+    def _compute_discount_applied(self):
+        for order in self:
+            if order.supplier_volume_discount_percentage > 0:
+                applied_lines = order.order_line.filtered(
+                    lambda l: l.discount == order.supplier_volume_discount_percentage
+                )
+                order.discount_applied = len(applied_lines) == len(order.order_line) and len(order.order_line) > 0
+            else:
+                order.discount_applied = False
 
     @api.onchange('partner_id')
     def _onchange_partner_id_apply_discount(self):
@@ -82,6 +114,21 @@ class PurchaseOrder(models.Model):
             for line in self.order_line:
                 if line.product_id:
                     line.discount = discount_percentage
+                    
+    def _auto_apply_volume_discount(self):
+        """Automatically apply volume discount to all lines"""
+        if self.qualifies_for_discount and self.supplier_volume_discount_percentage > 0:
+            for line in self.order_line:
+                if line.discount != self.supplier_volume_discount_percentage:
+                    line.write({'discount': self.supplier_volume_discount_percentage})
+                    
+    def _remove_volume_discount(self):
+        """Remove volume discount from lines that have it"""
+        if self.supplier_volume_discount_percentage > 0:
+            for line in self.order_line:
+                if line.discount == self.supplier_volume_discount_percentage:
+                    line.write({'discount': 0.0})
+
 
     def button_confirm(self):
         products_without_supplier = []

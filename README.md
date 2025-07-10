@@ -10,6 +10,7 @@ Este módulo extiende la funcionalidad de gestión de compras de Odoo 17 para ma
 - **Porcentaje de Descuento por Volumen**: Define el porcentaje de descuento que se aplica cuando se cumplen los requisitos mínimos de compra
 - **Monto Mínimo de Compra**: Establece el valor mínimo de pedido requerido para calificar para descuentos por volumen
 - **Validación**: Asegura que los porcentajes de descuento estén entre 0-100% y los montos mínimos sean positivos
+- **Nota**: Los descuentos por volumen solo se aplican a contactos configurados como "Compañías" (no a contactos individuales)
 
 ### 2. Mejoras en Órdenes de Compra
 - **Visualización de Descuentos del Proveedor**: Muestra el porcentaje de descuento por volumen y monto mínimo de compra del proveedor en las cabeceras de pedidos
@@ -66,7 +67,7 @@ Este módulo extiende la funcionalidad de gestión de compras de Odoo 17 para ma
    python3 -m odoo --addons-path=odoo/addons --database=odoo17_supplier_discounts
    ```
 
-5. **Acceder a Odoo**: Navegar a `http://localhost:8070` en el navegador web
+5. **Acceder a Odoo**: Navegar a `http://localhost:8071` en el navegador web
 
 ## Uso
 
@@ -100,23 +101,23 @@ Este módulo extiende la funcionalidad de gestión de compras de Odoo 17 para ma
 ## URLs para Probar Funcionalidades
 
 ### 🏠 **Página Principal**
-- **URL**: http://localhost:8070
+- **URL**: http://localhost:8071
 - **Credenciales**: admin / admin
 
 ### 👥 **Gestión de Proveedores**
-- **Lista de Contactos**: http://localhost:8070/web#action=base.action_partner_form&model=res.partner&view_type=list&cids=1&menu_id=114
-- **Crear Proveedor**: http://localhost:8070/web#action=base.action_partner_supplier_form&model=res.partner&view_type=form&cids=1&menu_id=170
+- **Lista de Contactos**: http://localhost:8071/web#action=base.action_partner_form&model=res.partner&view_type=list&cids=1&menu_id=114
+- **Crear Proveedor**: http://localhost:8071/web#action=base.action_partner_supplier_form&model=res.partner&view_type=form&cids=1&menu_id=170
 
 ### 🛒 **Gestión de Compras**
-- **Lista de Órdenes de Compra**: http://localhost:8070/web#action=purchase.purchase_rfq&model=purchase.order&view_type=list&cids=1&menu_id=165
-- **Crear Orden de Compra**: http://localhost:8070/web#action=purchase.purchase_rfq&model=purchase.order&view_type=form&cids=1&menu_id=165
+- **Lista de Órdenes de Compra**: http://localhost:8071/web#action=purchase.purchase_rfq&model=purchase.order&view_type=list&cids=1&menu_id=165
+- **Crear Orden de Compra**: http://localhost:8071/web#action=purchase.purchase_rfq&model=purchase.order&view_type=form&cids=1&menu_id=165
 
 ### 📦 **Gestión de Productos**
-- **Lista de Productos**: http://localhost:8070/web#action=product.product_template_action&model=product.template&view_type=list&cids=1&menu_id=150
-- **Categorías de Productos**: http://localhost:8070/web#action=product.product_category_action&model=product.category&view_type=list&cids=1&menu_id=148
+- **Lista de Productos**: http://localhost:8071/web#action=product.product_template_action&model=product.template&view_type=list&cids=1&menu_id=150
+- **Categorías de Productos**: http://localhost:8071/web#action=product.product_category_action&model=product.category&view_type=list&cids=1&menu_id=148
 
 ### 📊 **Reportes**
-- **Análisis de Compras**: http://localhost:8070/web#action=purchase.action_purchase_report&model=purchase.report&view_type=pivot&cids=1&menu_id=175
+- **Análisis de Compras**: http://localhost:8071/web#action=purchase.action_purchase_report&model=purchase.report&view_type=pivot&cids=1&menu_id=175
 
 ## Detalles Técnicos
 
@@ -209,22 +210,23 @@ Cuando se cumplen los criterios de calificación:
 ### 🧪 **Prueba Completa del Sistema**
 
 #### Paso 1: Configurar Proveedor con Descuento
-1. **URL**: http://localhost:8070/web#action=base.action_partner_supplier_form&model=res.partner&view_type=form&cids=1&menu_id=170
+1. **URL**: http://localhost:8071/web#action=base.action_partner_supplier_form&model=res.partner&view_type=form&cids=1&menu_id=170
 2. **Acciones**:
    - Crear nuevo proveedor o editar existente
+   - **IMPORTANTE**: Asegurar que el contacto esté configurado como "Compañía" (no como contacto individual)
    - Establecer "Descuento por Volumen (%)" = 15
    - Establecer "Monto Mínimo de Compra" = 1000
    - Guardar el proveedor
 
 #### Paso 2: Crear Productos de Prueba
-1. **URL**: http://localhost:8070/web#action=product.product_template_action&model=product.template&view_type=form&cids=1&menu_id=150
+1. **URL**: http://localhost:8071/web#action=product.product_template_action&model=product.template&view_type=form&cids=1&menu_id=150
 2. **Acciones**:
    - Crear 2-3 productos con precios diferentes
    - Asignar categorías a los productos
    - Configurar el proveedor creado como proveedor principal
 
 #### Paso 3: Probar Orden que NO Califica
-1. **URL**: http://localhost:8070/web#action=purchase.purchase_rfq&model=purchase.order&view_type=form&cids=1&menu_id=165
+1. **URL**: http://localhost:8071/web#action=purchase.purchase_rfq&model=purchase.order&view_type=form&cids=1&menu_id=165
 2. **Acciones**:
    - Crear nueva orden de compra
    - Seleccionar el proveedor configurado
