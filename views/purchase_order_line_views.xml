@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Purchase Order Line form view extension -->
+        <record id="purchase_order_line_form_supplier_volume_discount" model="ir.ui.view">
+            <field name="name">purchase.order.line.form.supplier.volume.discount</field>
+            <field name="model">purchase.order.line</field>
+            <field name="inherit_id" ref="purchase.purchase_order_line_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field name="product_category_name" readonly="1"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <!-- Purchase Order Line tree view extension -->
+        <record id="purchase_order_line_tree_supplier_volume_discount" model="ir.ui.view">
+            <field name="name">purchase.order.line.tree.supplier.volume.discount</field>
+            <field name="model">purchase.order.line</field>
+            <field name="inherit_id" ref="purchase.purchase_order_line_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='product_id']" position="after">
+                    <field name="product_category_name" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+        
+        <!-- Purchase Order form view - order lines extension -->
+        <record id="purchase_order_form_lines_supplier_volume_discount" model="ir.ui.view">
+            <field name="name">purchase.order.form.lines.supplier.volume.discount</field>
+            <field name="model">purchase.order</field>
+            <field name="inherit_id" ref="purchase.purchase_order_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='order_line']/tree//field[@name='product_id']" position="after">
+                    <field name="product_category_name" optional="show"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>

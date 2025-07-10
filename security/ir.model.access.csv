@@ -1,0 +1,4 @@
+id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
+access_supplier_volume_discounts_user,supplier_volume_discounts.user,base.model_res_partner,base.group_user,1,1,1,1
+access_supplier_volume_discounts_purchase_user,supplier_volume_discounts.purchase_user,purchase.model_purchase_order,purchase.group_purchase_user,1,1,1,1
+access_supplier_volume_discounts_purchase_line_user,supplier_volume_discounts.purchase_line_user,purchase.model_purchase_order_line,purchase.group_purchase_user,1,1,1,1

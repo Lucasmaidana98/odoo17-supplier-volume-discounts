@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Purchase Order Report Template Extension -->
+        <template id="report_purchaseorder_document_supplier_volume_discount" inherit_id="purchase.report_purchaseorder_document">
+            <!-- Add discount information to the header -->
+            <xpath expr="//div[@name='partner']" position="after">
+                <div t-if="o.qualifies_for_discount" class="row mt-2">
+                    <div class="col-12">
+                        <div class="alert alert-info" role="alert">
+                            <strong>Volume Discount Applied:</strong>
+                            <span t-field="o.supplier_volume_discount_percentage"/>% discount applied
+                            (Minimum purchase amount: <span t-field="o.supplier_minimum_purchase_amount"/>)
+                        </div>
+                    </div>
+                </div>
+            </xpath>
+            
+            <!-- Add product category column to order lines -->
+            <xpath expr="//table[@name='purchase_order_line_table']//thead//tr//th[2]" position="after">
+                <th class="text-left"><strong>Category</strong></th>
+            </xpath>
+            
+            <xpath expr="//table[@name='purchase_order_line_table']//tbody//tr//td[2]" position="after">
+                <td class="text-left">
+                    <span t-field="line.product_category_name"/>
+                </td>
+            </xpath>
+            
+            <!-- Add discount summary at the bottom -->
+            <xpath expr="//div[@id='total']" position="after">
+                <div t-if="o.qualifies_for_discount" class="row">
+                    <div class="col-sm-7 col-md-8"></div>
+                    <div class="col-sm-5 col-md-4">
+                        <table class="table table-condensed">
+                            <tr style="border-bottom: 1px solid #AAA;">
+                                <td><strong>Subtotal (without discount):</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.amount_without_discount"/>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #AAA;">
+                                <td><strong>Volume Discount:</strong></td>
+                                <td class="text-right">
+                                    -<span t-field="o.total_discount_amount"/>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #AAA;">
+                                <td><strong>Discount Savings:</strong></td>
+                                <td class="text-right">
+                                    <span t-field="o.discount_percentage_savings"/>%
+                                </td>
+                            </tr>
+                        </table>
+                    </div>
+                </div>
+            </xpath>
+        </template>
+    </data>
+</odoo>

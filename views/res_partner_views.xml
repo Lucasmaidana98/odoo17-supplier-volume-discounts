@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <data>
+        <!-- Supplier form view extension -->
+        <record id="view_partner_form_supplier_volume_discount" model="ir.ui.view">
+            <field name="name">res.partner.form.supplier.volume.discount</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_form"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='is_company']" position="after">
+                    <group name="supplier_volume_discount" string="Volume Discount" invisible="not is_company">
+                        <field name="volume_discount_percentage"/>
+                        <field name="minimum_purchase_amount"/>
+                    </group>
+                </xpath>
+            </field>
+        </record>
+        
+        <!-- Add volume discount fields to supplier list view -->
+        <record id="view_partner_tree_supplier_volume_discount" model="ir.ui.view">
+            <field name="name">res.partner.tree.supplier.volume.discount</field>
+            <field name="model">res.partner</field>
+            <field name="inherit_id" ref="base.view_partner_tree"/>
+            <field name="arch" type="xml">
+                <xpath expr="//field[@name='phone']" position="after">
+                    <field name="volume_discount_percentage" optional="hide"/>
+                    <field name="minimum_purchase_amount" optional="hide"/>
+                </xpath>
+            </field>
+        </record>
+    </data>
+</odoo>
